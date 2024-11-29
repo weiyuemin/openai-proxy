@@ -13,7 +13,7 @@ Deno.serve(async (request) => {
   const newRequest = new Request(url.toString(), {
     headers: request.headers,
     method: request.method,
-    body: request.body,
+    body: value,
     redirect: "follow",
   });
   return await fetch(newRequest);
