@@ -1,4 +1,4 @@
-const OPENAI_API_HOST = "api.openai.com";
+const OPENAI_API_HOST = "api.deepseek.com";
 
 Deno.serve(async (request) => {
   const url = new URL(request.url);
