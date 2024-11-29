@@ -6,7 +6,9 @@ Deno.serve(async (request) => {
   const url = new URL(request.url);
   url.host = OPENAI_API_HOST;
 
-  console.log(request.body);
+  const reader = request.body.getReader();
+  const { value } = await reader.read();
+  console.log(new TextDecoder().decode(value));
 
   const newRequest = new Request(url.toString(), {
     headers: request.headers,
