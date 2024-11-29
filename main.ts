@@ -10,10 +10,17 @@ Deno.serve(async (request) => {
   const { value } = await reader.read();
   console.log(new TextDecoder().decode(value));
 
+  const newBody = new ReadableStream({
+    start(controller) {
+      controller.enqueue(value);
+      controller.close();
+    },
+  });
+
   const newRequest = new Request(url.toString(), {
     headers: request.headers,
     method: request.method,
-    body: value,
+    body: newBody,
     redirect: "follow",
   });
   return await fetch(newRequest);
