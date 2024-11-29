@@ -7,20 +7,21 @@ Deno.serve(async (request) => {
   url.host = OPENAI_API_HOST;
 
   const reader = request.body.getReader();
-  const { value } = await reader.read();
+  let value = new Uint8Array();
+  while (true) {
+    const { done, value: chunk } = await reader.read();
+    if (done) break;
+    const temp = new Uint8Array(value.length + chunk.length);
+    temp.set(value, 0);
+    temp.set(chunk, value.length);
+    value = temp;
+  }
   console.log(new TextDecoder().decode(value));
-
-  const newBody = new ReadableStream({
-    start(controller) {
-      controller.enqueue(value);
-      controller.close();
-    },
-  });
 
   const newRequest = new Request(url.toString(), {
     headers: request.headers,
     method: request.method,
-    body: newBody,
+    body: value,
     redirect: "follow",
   });
   return await fetch(newRequest);
